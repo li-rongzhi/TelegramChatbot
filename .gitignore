@@ -1,5 +1,17 @@
+*.pyc
+
+# Ignore log files
+*.log
+
+# Ignore IDE-specific files and directories
+.vscode/
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+database/__pycache__/
+features/__pycache__/
+handler/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -127,6 +139,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+botenv/
 
 # Spyder project settings
 .spyderproject
