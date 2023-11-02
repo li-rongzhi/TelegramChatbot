@@ -19,6 +19,7 @@ import logging
 from telegram import Update
 from telegram.ext import Application
 import handler.handler as handler
+from utils.setup import env_setup
 
 
 # Enable logging
@@ -30,9 +31,11 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-chatbot_token = os.environ.get('CHATBOT_TOKEN')
+
 
 def main():
+    env_setup()
+    chatbot_token = os.environ.get('CHATBOT_TOKEN')
     application = Application.builder().token(chatbot_token).build()
     handler.setup(application)
     application.run_polling(allowed_updates=Update.ALL_TYPES)

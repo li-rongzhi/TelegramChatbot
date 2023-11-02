@@ -3,6 +3,7 @@ from telegram.ext import ContextTypes
 from utils.utils import GENERAL, TIMER
 
 async def timer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Enters the timer mode"""
     user_id = update.message.from_user.id
     db = context.user_data.get('db')
     db.update_user_state(user_id, TIMER)
@@ -12,13 +13,13 @@ async def timer(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def alarm(context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send the alarm message."""
+    """Send the alarm message"""
     job = context.job
     await context.bot.send_message(job.chat_id, text=f"Beep! {job.data} seconds are over!")
 
 
 def remove_job_if_exists(name: str, context: ContextTypes.DEFAULT_TYPE) -> bool:
-    """Remove job with given name. Returns whether job was removed."""
+    """Removes job with given name. Returns whether job was removed"""
     current_jobs = context.job_queue.get_jobs_by_name(name)
     if not current_jobs:
         return False
@@ -27,7 +28,7 @@ def remove_job_if_exists(name: str, context: ContextTypes.DEFAULT_TYPE) -> bool:
     return True
 
 async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Add a job to the queue."""
+    """Sets a new timer"""
     chat_id = update.effective_message.chat_id
     try:
         # args[0] should contain the time for the timer in seconds
@@ -49,7 +50,7 @@ async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def unset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Remove the job if the user changed their mind."""
+    """Cancels the lastly added timer"""
     chat_id = update.message.chat_id
     job_removed = remove_job_if_exists(str(chat_id), context)
     text = "Timer successfully cancelled!" if job_removed else "You have no active timer."
