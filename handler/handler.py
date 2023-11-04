@@ -11,6 +11,7 @@ from utils.utils import GENERAL, LLM, TASK_MANAGEMENT, TIMER, CHOOSE_STYLE, UPLO
 
 
 db_password = os.environ.get('DB_PASSWORD')
+
 configs = {
     'host':'localhost',
     'user': 'root',
@@ -18,6 +19,18 @@ configs = {
     'database':'telebot'
 }
 
+intro_message = """
+Welcome to Jarvis! Here are some of my functionalities:
+
+1. <b>/task</b>
+    - Handle your todo list.
+2. <b>/llm</b>
+    - Chat freely with ChatGPT.
+3. <b>/style_transfer</b>
+    - Transfer your image to predefined styles.
+
+You can use these shortcuts to access each functionality.
+"""
 
 # async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: MySQLDatabase):
@@ -29,8 +42,7 @@ async def start(update: Update, context: MySQLDatabase):
     db.initialize_user_state(str(user_id))
     user = update.effective_user
     await update.message.reply_html(
-        rf"Hi {user.mention_html()}!",
-        reply_markup=ForceReply(selective=True),
+        rf"Hi {user.mention_html()}!{intro_message}"
     )
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -51,9 +63,6 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if db.check_user_state(user_id, LLM):
         output = await get_output(update.message.text)
         await update.message.reply_text(output)
-    # elif db.check_user_state(user_id, STYLE_TRANSFER):
-    #     result = await choose_style(update, context)
-    #     return result
     else:
         await update.message.reply_text(update.message.text)
 
