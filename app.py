@@ -31,8 +31,6 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-
-
 def main():
     env_setup()
     chatbot_token = os.environ.get('CHATBOT_TOKEN')
