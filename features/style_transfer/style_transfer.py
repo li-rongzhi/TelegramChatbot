@@ -12,7 +12,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-model_url = 'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2'
+model_url = "features/style_transfer/style_transfer_model"
 
 async def style_transfer(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the style_transfer mode"""
@@ -86,6 +86,7 @@ class NeuralStyleTransfer:
     }
 
     def __init__(self, model_url):
+        print(model_url)
         self.model = hub.load(model_url)
 
     def load_image(self, img_path):

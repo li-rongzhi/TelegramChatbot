@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from utils.utils import LLM
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 async def llm(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the LLM mode"""
@@ -14,6 +14,7 @@ async def llm(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "You are now in the LLM mode, you can chat freely with ChatGPT. Use /back to return to General mode."
     )
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
 async def get_output(user_input):
     """Get output from the ChatGPT API"""
