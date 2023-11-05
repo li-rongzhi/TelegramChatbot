@@ -1,7 +1,6 @@
 import os
 from telegram import KeyboardButton, Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes, ConversationHandler
-import tensorflow_hub as hub
 import tensorflow as tf
 import numpy as np
 import cv2
