@@ -11,16 +11,6 @@ import features.style_transfer.style_transfer as st
 import features.news as news
 from utils.utils import GENERAL, LLM, CHOOSE_STYLE, UPLOAD_IMAGE, STYLES, GET_NEWS, NEWS_CATEGORY
 
-
-# db_password = os.environ.get('DB_PASSWORD')
-# db_password = "Lrz133227!"
-# configs = {
-#     'host':'localhost',
-#     'user': 'root',
-#     'password':db_password,
-#     'database':'telebot'
-# }
-
 intro_message = """
 Welcome to Jarvis! Here are some of my functionalities:
 
@@ -38,7 +28,7 @@ You can use these shortcuts to access each functionality.
 
 # async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: MySQLDatabase):
-    db_password = os.environ.get('DB_PASSWORD')
+    db_password = os.getenv('DB_PASSWORD')
     configs = {
         'host':'localhost',
         'user': 'root',
