@@ -107,12 +107,6 @@ telegram
 tensorboard
 tensorboard-data-server
 tensorflow
-tensorflow-datasets
-tensorflow-estimator
-tensorflow-hub
-tensorflow-io-gcs-filesystem
-tensorflow-macos
-tensorflow-metadata
 termcolor
 toml
 tornado
