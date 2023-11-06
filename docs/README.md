@@ -24,7 +24,7 @@ To start using the Telegram Chatbot -- **Jarvis**, click [here](https://t.me/Ron
   - `/llm`: Chat with Language Model (LLM).
   - `/style_transfer`: Apply artistic styles to your images.
   - `/news`: Get the latest news headlines from a chosen category.
-- Feel free to check out more details of command usage in the [User Guide](./docs/user_guide.md).
+- Feel free to check out more details of command usage in the [User Guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html).
 
-If you want to deploy the chatbot on your own, please check out the [Deployment Instructions](./docs/deployment_instructions.md).
+If you want to deploy the chatbot on your own, please check out the [Deployment Instructions](https://li-rongzhi.github.io/TelegramChatbot/deployment_instructions.html).
 
