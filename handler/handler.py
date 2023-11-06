@@ -64,7 +64,7 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
     db = context.user_data.get('db')
     if db.check_user_state(user_id, LLM):
-        await send_message(update.message.text)
+        await send_message(update=update, context=context, user_input=update.message.text)
         # await update.message.reply_text(output)
     else:
         await update.message.reply_text(update.message.text)
