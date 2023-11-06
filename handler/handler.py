@@ -48,7 +48,7 @@ async def start(update: Update, context: MySQLDatabase):
     )
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = "You can check out the [user guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html) in Markdown format."
+    message = "You can check out the [user guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html)."
     await update.message.reply_text(message, parse_mode="Markdown")
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
