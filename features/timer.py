@@ -6,10 +6,13 @@ async def timer(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the timer mode"""
     user_id = update.message.from_user.id
     db = context.user_data.get('db')
-    db.update_user_state(user_id, TIMER)
-    await update.message.reply_text(
-        "You are now in the Timer session. Use /set to set timer or /unset to unset existing timer."
-    )
+    if db.check_user_state(user_id, TIMER):
+        await update.message.reply_text("You are already in the Timer mode")
+    else:
+        db.update_user_state(user_id, TIMER)
+        await update.message.reply_text(
+            "You are now in the Timer mode. Use /set to set timer or /unset to unset existing timer."
+        )
 
 
 async def alarm(context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -30,6 +33,11 @@ def remove_job_if_exists(name: str, context: ContextTypes.DEFAULT_TYPE) -> bool:
 async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sets a new timer"""
     chat_id = update.effective_message.chat_id
+    user_id = update.message.from_user.id
+    db = context.user_data.get('db')
+    if not db.check_user_state(user_id, TIMER):
+        await update.message.reply_text("Please enter Timer mode using /timer.")
+        return
     try:
         # args[0] should contain the time for the timer in seconds
         due = float(context.args[0])
@@ -52,6 +60,11 @@ async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def unset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Cancels the lastly added timer"""
     chat_id = update.message.chat_id
+    user_id = update.message.from_user.id
+    db = context.user_data.get('db')
+    if not db.check_user_state(user_id, TIMER):
+        await update.message.reply_text("Please enter Timer mode using /timer.")
+        return
     job_removed = remove_job_if_exists(str(chat_id), context)
     text = "Timer successfully cancelled!" if job_removed else "You have no active timer."
     await update.message.reply_text(text)

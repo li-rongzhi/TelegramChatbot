@@ -1,4 +1,4 @@
-from telegram import Update, ForceReply
+from telegram import Update, ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 import os
 from database.db import MySQLDatabase
@@ -22,7 +22,8 @@ Welcome to Jarvis! Here are some of my functionalities:
     - Transfer your image to predefined styles.
 4. <b>/news</b>
     - Stay updated with the latest news.
-
+5. <b>/help</b>
+    - Access the user guide for more information.
 You can use these shortcuts to access each functionality.
 """
 
@@ -47,7 +48,8 @@ async def start(update: Update, context: MySQLDatabase):
     )
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Help!")
+    message = "You can check out the [user guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html) in Markdown format."
+    await update.message.reply_text(message, parse_mode=ParseMode.MARKDOWN)
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id

@@ -10,11 +10,12 @@ async def task_management(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         await update.message.reply_text("You are already in the Task Management mode")
-    db.update_user_state(user_id, TASK_MANAGEMENT)
-    await update.message.reply_text(
-        "You are now in the Task Management mode. " + \
-        "Use /add to add tasks, /mark to mark a task as done, or /list to list your tasks."
-    )
+    else:
+        db.update_user_state(user_id, TASK_MANAGEMENT)
+        await update.message.reply_text(
+            "You are now in the Task Management mode. " + \
+            "Use /add to add tasks, /mark to mark a task as done, or /list to list your tasks."
+        )
 
 async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Adds task to the task tracking list"""
@@ -36,7 +37,7 @@ async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.add_task(**task_data)
         await update.message.reply_text("Task added successfully!")
     else:
-        await update.message.reply_text("Please start a Task Management mode using /task.")
+        await update.message.reply_text("Please enter Task Management mode using /task.")
 
 async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Deletes task from the task tracking list by index"""
@@ -46,7 +47,7 @@ async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.delete_task(user_id, context.args[0])
         await update.message.reply_text("Task deleted successfully!")
     else:
-        await update.message.reply_text("Please start a Task Management mode using /task.")
+        await update.message.reply_text("Please enter Task Management mode using /task.")
 
 async def mark_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Marks a task as done by index"""
@@ -57,7 +58,7 @@ async def mark_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.mark_task(user_id, task_id)
         await update.message.reply_text("Task marked successfully!")
     else:
-        await update.message.reply_text("Please start a Task Management mode using /task.")
+        await update.message.reply_text("Please enter Task Management mode using /task.")
 
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Lists all tasks currently recorded"""
@@ -77,5 +78,5 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("You have no tasks.")
     else:
-        await update.message.reply_text("Please start a Task Management mode using /task.")
+        await update.message.reply_text("Please enter Task Management mode using /task.")
 
