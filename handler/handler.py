@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 import os
 from database.db import MySQLDatabase
-from features.llm import llm, get_output
+from features.llm import llm, send_message
 from features.news import get_news, select_category
 from features.task_managerment import add_task, delete_task, list_tasks, mark_task, task_management
 from features.timer import set_timer, unset
@@ -64,8 +64,8 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
     db = context.user_data.get('db')
     if db.check_user_state(user_id, LLM):
-        output = await get_output(update.message.text)
-        await update.message.reply_text(output)
+        await send_message(update.message.text)
+        # await update.message.reply_text(output)
     else:
         await update.message.reply_text(update.message.text)
 
