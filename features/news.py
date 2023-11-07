@@ -2,6 +2,7 @@ import os
 import requests
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import ContextTypes, ConversationHandler
+from app import db
 from utils.utils import NEWS, NEWS_CATEGORY, GET_NEWS, ENDPOINT
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -14,7 +15,6 @@ logger = logging.getLogger(__name__)
 async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the news mode"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, NEWS):
         await update.message.reply_text("You are already in the News mode")
     else:
@@ -28,7 +28,6 @@ async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_category(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Asks user to select a interested category"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, NEWS):
         style_buttons = [[KeyboardButton(category)] for category in NEWS_CATEGORY]
         style_markup = ReplyKeyboardMarkup(style_buttons, one_time_keyboard=True, resize_keyboard=True, input_field_placeholder="Please choose a style.")

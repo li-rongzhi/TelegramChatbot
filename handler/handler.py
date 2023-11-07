@@ -1,7 +1,9 @@
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler, CallbackContext
 import os
+from app import CustomContext
 from database.db import MySQLDatabase
+from database.mongo_db import MongoDB
 from features.llm import llm, send_message
 from features.news import get_news, select_category
 from features.task_managerment import add_task, delete_task, list_tasks, mark_task, task_management
@@ -10,7 +12,7 @@ from features.style_transfer.style_transfer import style_transfer, style, choose
 import features.style_transfer.style_transfer as st
 import features.news as news
 from utils.utils import GENERAL, LLM, CHOOSE_STYLE, UPLOAD_IMAGE, STYLES, GET_NEWS, NEWS_CATEGORY
-
+from app import db
 intro_message = """
 Welcome to Jarvis! Here are some of my functionalities:
 
@@ -27,21 +29,9 @@ Welcome to Jarvis! Here are some of my functionalities:
 You can use these shortcuts to access each functionality.
 """
 
-# async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-async def start(update: Update, context: MySQLDatabase):
-    db_password = os.getenv('DB_PASSWORD')
-    configs = {
-        'host':'localhost',
-        'user': 'root',
-        'password':db_password,
-        'database':'telebot'
-    }
-    context.user_data['db'] = MySQLDatabase(**configs)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
-    db.connect()
-    db.initialize()
-    db.initialize_user_state(str(user_id))
+    db.initialize_user_state(user_id)
     user = update.effective_user
     await update.message.reply_html(
         rf"Hi {user.mention_html()}!{intro_message}"
@@ -53,7 +43,6 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     db.update_user_state(user_id, GENERAL)
     await update.message.reply_text("You are back to GENERAL mode now.")
 
@@ -62,7 +51,6 @@ async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, LLM):
         await send_message(update=update, context=context, user_input=update.message.text)
         # await update.message.reply_text(output)

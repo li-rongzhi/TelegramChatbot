@@ -1,11 +1,11 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from utils.utils import GENERAL, TIMER
+from app import db
 
 async def timer(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the timer mode"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TIMER):
         await update.message.reply_text("You are already in the Timer mode")
     else:
@@ -34,7 +34,6 @@ async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sets a new timer"""
     chat_id = update.effective_message.chat_id
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if not db.check_user_state(user_id, TIMER):
         await update.message.reply_text("Please enter Timer mode using /timer.")
         return
@@ -61,7 +60,6 @@ async def unset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Cancels the lastly added timer"""
     chat_id = update.message.chat_id
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if not db.check_user_state(user_id, TIMER):
         await update.message.reply_text("Please enter Timer mode using /timer.")
         return

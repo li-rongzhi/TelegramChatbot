@@ -3,11 +3,13 @@ import logging
 from dataclasses import dataclass
 from http import HTTPStatus
 import os
+from typing import Optional
 from dotenv import load_dotenv
 
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from flask import Flask, Response, abort, make_response, request
+from database.mongo_db import MongoDB
 import handler.handler as handler
 
 from telegram import Update
@@ -28,8 +30,18 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+load_dotenv()
+
 
 PORT=3000
+database = os.getenv('DB')
+
+configs = {
+    'host':'localhost',
+    'port': 27017,
+    'database': database
+}
+db = MongoDB(**configs)
 
 @dataclass
 class WebhookUpdate:
@@ -72,10 +84,9 @@ async def webhook_update(update: WebhookUpdate, context: CustomContext) -> None:
 
 async def main() -> None:
     """Set up PTB application and a web application for handling the incoming requests."""
-    load_dotenv()
-    context_types = ContextTypes(context=CustomContext)
     chatbot_token = os.getenv('CHATBOT_TOKEN')
     url = os.getenv('WEBHOOK_URL')
+    context_types = ContextTypes(context=CustomContext)
     application = (
         Application.builder().token(chatbot_token).updater(None).context_types(context_types).build()
     )
@@ -138,4 +149,7 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    db.connect()
+    db.initialize()
     asyncio.run(main())

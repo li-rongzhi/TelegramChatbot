@@ -1,13 +1,13 @@
 import re
 from telegram import Update
 from telegram.ext import ContextTypes
+from app import db
 from utils.utils import GENERAL, TASK_MANAGEMENT
 
 
 async def task_management(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the task management mode"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         await update.message.reply_text("You are already in the Task Management mode")
     else:
@@ -20,7 +20,6 @@ async def task_management(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Adds task to the task tracking list"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         user_input = ' '.join(context.args)
         pattern = r'([dts])/(.*?)\s*(?=[dts]/|\Z)'
@@ -42,7 +41,6 @@ async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Deletes task from the task tracking list by index"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         db.delete_task(user_id, context.args[0])
         await update.message.reply_text("Task deleted successfully!")
@@ -52,7 +50,6 @@ async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def mark_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Marks a task as done by index"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         task_id = context.args[0]
         db.mark_task(user_id, task_id)
@@ -63,7 +60,6 @@ async def mark_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Lists all tasks currently recorded"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         tasks = db.list_tasks(user_id)
         if tasks:
@@ -71,8 +67,15 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
             header_string = " | ".join(headers)
             task_rows = [header_string]
             for task in tasks:
-                task_str = " | ".join(str(column) for column in task)
-                task_rows.append(task_str)
+                is_done = "Yes" if task['isDone'] else "No"
+                task_row = [task['task_id'], task['description'], is_done, task['remark'], task['due']]
+                task_rows.append(task_row)
+
+            task_list = "\n".join([" | ".join(map(str, row)) for row in task_rows])
+
+            # for task in tasks:
+            #     task_str = " | ".join(str(column) for column in task)
+            #     task_rows.append(task_str)
             task_list = "\n".join(task_rows)
             await update.message.reply_text(f"Your tasks:\n{task_list}")
         else:
