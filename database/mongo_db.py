@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+import uuid
 from pymongo import MongoClient
 from utils.utils import GENERAL
 
@@ -8,6 +10,8 @@ class MongoDB:
         self.port = port
         self.database = database
         self.client = None
+        self.connect()
+        self.initialize()
 
     def connect(self):
         try:
@@ -37,6 +41,11 @@ class MongoDB:
                 db.tasks.create_index([('user_id', 1), ('task_id', 1)], unique=True)
                 db.tasks.create_index([('due', 1)])
 
+            # Create 'dialogs' collection
+            if "dialogs" not in collections:
+                db.create_collection("dialogs")
+                db.dialogs.create_index([("_id", 1), ("user_id", 1)], unique=True)
+
             print("MongoDB initialization script executed successfully")
         except Exception as e:
             print("Error executing MongoDB initialization script:", e)
@@ -46,6 +55,19 @@ class MongoDB:
             self.client.close()
             print("Disconnected from MongoDB")
 
+    def add_user(self, user_id):
+        db = self.client[self.database]
+        users_collection = db["users"]
+
+        user = users_collection.find_one({"user_id": user_id})
+        if user is None:
+            users_collection.insert_one({
+                "user_id": user_id,
+                "isPremium": False,
+                "current_dialog_id": None
+            })
+        else:
+            print("User already in users collection")
     def check_user_state(self, user_id: str, target: int) -> bool:
         db = self.client[self.database]
         states_collection = db['states']
@@ -178,3 +200,50 @@ class MongoDB:
         ]
 
         return task_list
+
+    def start_new_dialog(self, user_id):
+        dialog_id = str(uuid.uuid4())
+        dialog_dict = {
+            "_id": dialog_id,
+            "user_id": user_id,
+            "start_time": datetime.now(),
+            "messages": []
+        }
+        db = self.client[self.database]
+        dialog_collection = db["dialogs"]
+        dialog_collection.insert_one(dialog_dict)
+        user_collection = db['users']
+        user_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {"current_dialog_id": dialog_id}}
+        )
+
+    def get_dialog_messages(self, user_id, dialog_id: Optional[str] = None):
+
+        if dialog_id is None:
+            dialog_id = self.get_user_attribute(user_id, "current_dialog_id")
+        db = self.client[self.database]
+        dialog_collection = db["dialogs"]
+        dialog_dict = dialog_collection.find_one({"_id": dialog_id, "user_id": user_id})
+        return dialog_dict["messages"]
+
+    def set_dialog_messages(self, user_id, dialog_messages: list, dialog_id: Optional[str] = None):
+
+        if dialog_id is None:
+            dialog_id = self.get_user_attribute(user_id, "current_dialog_id")
+        db = self.client[self.database]
+        dialog_collection = db["dialogs"]
+        dialog_collection.update_one(
+            {"_id": dialog_id, "user_id": user_id},
+            {"$set": {"messages": dialog_messages}}
+        )
+
+    def get_user_attribute(self, user_id: int, key: str):
+        db = self.client[self.database]
+        user_collection = db['users']
+        user_dict = user_collection.find_one({"user_id": user_id})
+
+        if key not in user_dict:
+            return None
+
+        return user_dict[key]
