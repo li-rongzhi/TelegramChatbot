@@ -31,6 +31,7 @@ You can use these shortcuts to access each functionality.
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
+    db.add_user(user_id=user_id)
     db.initialize_user_state(user_id)
     user = update.effective_user
     await update.message.reply_html(

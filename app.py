@@ -150,6 +150,4 @@ async def main() -> None:
 
 if __name__ == "__main__":
     load_dotenv()
-    db.connect()
-    db.initialize()
     asyncio.run(main())
