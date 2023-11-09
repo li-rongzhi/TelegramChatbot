@@ -33,6 +33,7 @@ Welcome to the Telegram Chatbot -- **[Jarvis](t.me/Rongzhi_chatbot)** ! This bot
    - Type `/llm` to enter LLM mode.
    - In this mode, you can:
      - Engage in text-based conversations with the `chatgpt-3.5-turbo` model empowered by OpenAI.
+     - The chat bot supports context memory which enables smooth user experience. You can start a new dialog session with `/new`.
      - Note: there is a token limit for normal users, you can use `/upgrade` to upgrade to Premium for unlimited access.
 
 4. **Style Transfer Mode:**
@@ -49,11 +50,11 @@ Welcome to the Telegram Chatbot -- **[Jarvis](t.me/Rongzhi_chatbot)** ! This bot
      - Stay informed with the news that interests you the most.
 
 6. **General Commands:**
-   - At any time, you can return to the main menu by typing `/back`.
+   - Use `/back` to return to the `GENERAL` mode at any time.
    - Use `/help` for a quick reference of available commands and how to use them.
    - Use `/exit` to terminate a chat session.
    - Use `/upgrade` to upgrade to premium for unlimited llm access.
 
-Please note that this chatbot is designed to assist you in different tasks, and each mode has its specific functionality. If you ever get stuck or need help, don't hesitate to use the `/help` command or reach out to the bot's support team for assistance.
+Please note that this chatbot is designed to assist you in different tasks, and each mode has its specific functionality. If you ever get stuck or need help, don't hesitate to use the `/help` command or reach out to the bot's developer for assistance.
 
 Enjoy using the Telegram Chatbot and make the most of its features for task management, chat, style transformation, and news updates!
