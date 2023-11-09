@@ -31,15 +31,13 @@ Follow these steps to deploy the Telegram Chatbot in your environment:
     - Go to [News API](https://newsapi.org/) and sign up or log in to your account.
     - Create a new API key and store in `.env` file.
 
-5. **Set Up your MySQL Database:**
-    - Create a database named `telebot`, whcih follows the configuration below.
+5. **Set Up your Mongo Database:**
+    - Create a database, whcih follows the configuration below.
     ```
         'host':'localhost',
-        'user': 'root',
-        'password': db_password,
-        'database':'telebot'
+        'database': 'your_db_name'
     ```
-    - Store the password required in `.env` file.
+    - Store the database name required in `.env` file.
 
 6. **Set Up a Public Domain for Webhook:**
     - Get a public domain which serve as the webhook.
