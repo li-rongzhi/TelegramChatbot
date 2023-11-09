@@ -64,7 +64,8 @@ class MongoDB:
             users_collection.insert_one({
                 "user_id": user_id,
                 "isPremium": False,
-                "current_dialog_id": None
+                "current_dialog_id": None,
+                "n_used_tokens": {"n_input_tokens": 0, "n_output_tokens": 0}
             })
         else:
             print("User already in users collection")
@@ -247,3 +248,29 @@ class MongoDB:
             return None
 
         return user_dict[key]
+
+    def update_n_used_tokens(self, user_id: int, n_input_tokens: int, n_output_tokens: int):
+        n_used_tokens_dict = self.get_user_attribute(user_id, "n_used_tokens")
+
+        n_used_tokens_dict["n_input_tokens"] += n_input_tokens
+        n_used_tokens_dict["n_output_tokens"] += n_output_tokens
+
+        db = self.client[self.database]
+        users_collection = db['users']
+        users_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {"n_used_tokens": n_used_tokens_dict}}
+        )
+
+    def check_tokens(self, user_id: int, maximum_tokens: int):
+        n_used_tokens_dict = self.get_user_attribute(user_id, "n_used_tokens")
+        cumulated_token_num = n_used_tokens_dict['n_input_tokens'] + n_used_tokens_dict['n_output_tokens']
+        return maximum_tokens > cumulated_token_num
+
+    def upgrade_user(self, user_id: int):
+        db = self.client[self.database]
+        users_collection = db['users']
+        users_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {"isPremium": True}}
+        )

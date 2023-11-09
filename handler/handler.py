@@ -4,7 +4,7 @@ import os
 from app import CustomContext
 from database.db import MySQLDatabase
 from database.mongo_db import MongoDB
-from features.llm import llm, send_message
+from features.llm import llm, send_message, start_new_dialog
 from features.news import get_news, select_category
 from features.task_managerment import add_task, delete_task, list_tasks, mark_task, task_management
 from features.timer import set_timer, unset
@@ -50,11 +50,15 @@ async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Bye!")
 
+async def upgrade(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_id = update.message.from_user.id
+    db.upgrade_user(user_id)
+    await update.message.reply_text("You have successfully upgraded to Premium.")
+
 async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
     if db.check_user_state(user_id, LLM):
         await send_message(update=update, context=context, user_input=update.message.text)
-        # await update.message.reply_text(output)
     else:
         await update.message.reply_text(update.message.text)
 
@@ -64,6 +68,7 @@ def setup(application: Application):
     application.add_handler(CommandHandler("help", help))
     application.add_handler(CommandHandler("exit", exit))
     application.add_handler(CommandHandler("back", back))
+    application.add_handler(CommandHandler("upgrade", upgrade))
 
     # timer functionality
     application.add_handler(CommandHandler("set", set_timer))
@@ -101,4 +106,5 @@ def setup(application: Application):
 
     # llm functionality
     application.add_handler(CommandHandler("llm", llm))
+    application.add_handler(CommandHandler("new", start_new_dialog))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
