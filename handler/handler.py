@@ -7,7 +7,7 @@ from database.mongo_db import MongoDB
 from features.llm import llm, send_message, start_new_dialog
 from features.news import get_news, select_category
 from features.task_managerment import add_task, delete_task, list_tasks, mark_task, task_management
-from features.timer import set_timer, unset
+from features.timer import set_timer, unset, timer
 from features.style_transfer.style_transfer import style_transfer, style, choose_style, upload_image, cancel
 import features.style_transfer.style_transfer as st
 import features.news as news
@@ -19,13 +19,18 @@ Welcome to Jarvis! Here are some of my functionalities:
 1. <b>/task</b>
     - Handle your todo list.
 2. <b>/llm</b>
-    - Chat freely with ChatGPT.
+    - Chat freely with <i>ChatGPT</i>.
 3. <b>/style_transfer</b>
     - Transfer your image to predefined styles.
 4. <b>/news</b>
     - Stay updated with the latest news.
-5. <b>/help</b>
-    - Access the user guide for more information.
+5. <b>/timer</b>
+    - Set a timer for productivity.
+6. <b>/upgrade</b>
+    - Upgrade to <i>Premium</i> for unlimited LLM access (no payment needed for now).
+7. <b>/help</b>
+    - Access the User Guide for more information.
+
 You can use these shortcuts to access each functionality.
 """
 
@@ -39,7 +44,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = "You can check out the [user guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html)."
+    message = "You can check out the [User Guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html)."
     await update.message.reply_text(message, parse_mode="Markdown")
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -71,6 +76,7 @@ def setup(application: Application):
     application.add_handler(CommandHandler("upgrade", upgrade))
 
     # timer functionality
+    application.add_handler(CommandHandler("timer", timer))
     application.add_handler(CommandHandler("set", set_timer))
     application.add_handler(CommandHandler("unset", unset))
 

@@ -8,6 +8,7 @@ import numpy as np
 import cv2
 from utils.utils import STYLE_TRANSFER, CHOOSE_STYLE, UPLOAD_IMAGE, STYLES
 import logging
+from app import db
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
@@ -18,7 +19,6 @@ model_url = "features/style_transfer/style_transfer_model"
 async def style_transfer(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the style_transfer mode"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     db.update_user_state(user_id, STYLE_TRANSFER)
     context.user_data['style_transfer'] = NeuralStyleTransfer(model_url)
     print('model successfully fetched')
@@ -29,7 +29,6 @@ async def style_transfer(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def style(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Asks the user to choose a style from the provided list"""
     user_id = update.message.from_user.id
-    db = context.user_data.get('db')
     if db.check_user_state(user_id, STYLE_TRANSFER):
         style_buttons = [[KeyboardButton(style)] for style in STYLES]
         style_markup = ReplyKeyboardMarkup(style_buttons, one_time_keyboard=True, resize_keyboard=True, input_field_placeholder="Please choose a style.")
@@ -50,6 +49,8 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Processes the image received and sends the result back to the user"""
     user = update.message.from_user
     photo_file = await update.message.photo[-1].get_file()
+    await update.message.reply_text("Please wait a moment...")
+    await update.message.chat.send_action(action="typing")
     chosen_style = context.user_data['chosen_style']
     transfer_engine = context.user_data['style_transfer']
     await photo_file.download_to_drive("user_photo.jpg")
@@ -60,8 +61,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
     os.remove('user_photo.jpg')
     os.remove('temp.jpg')
     logger.info("Photo of %s successfully transfered to %s style", user.first_name, chosen_style)
-    await update.message.reply_text("Here is your stylized image. \
-                                    You can use /style to try out another style or retun to General mode with /back.")
+    await update.message.reply_text("Here is your stylized image. You can use /style to try out another style or retun to General mode with /back.")
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

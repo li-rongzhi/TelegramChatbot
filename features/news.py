@@ -10,7 +10,6 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-# Replace 'YOUR_API_KEY' with your actual News API key
 
 async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Enters the news mode"""
@@ -57,17 +56,18 @@ async def get_news(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if 'articles' in data:
                 articles = data['articles']
                 news_message = "<b>Here are the latest news articles:</b>\n\n"
+                await update.message.reply_html(news_message)
                 # Display the top headlines
                 for article in articles[:3]:
                     title = article.get('title', 'N/A')
                     url = article.get('url')
-                    news_message += f"<a href='{url}'><b>{title}</b></a> \n"
+                    news_message = f"<a href='{url}'><b>{title}</b></a> \n"
                     description = article.get('description')
                     if description:
                         news_message += f"<i>{description}</i>\n\n"
                     else:
                         news_message += "\n"
-                await update.message.reply_html(news_message)
+                    await update.message.reply_html(news_message)
             else:
                 await update.message.reply_text("No articles found in the response.")
         else:

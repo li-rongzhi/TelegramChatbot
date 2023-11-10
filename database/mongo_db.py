@@ -160,15 +160,20 @@ class MongoDB:
 
         # Find the task document to delete
         task_to_delete = tasks_collection.find_one({'user_id': user_id, 'task_id': task_id})
-
-        if task_to_delete:
+        if task_to_delete is not None:
             tasks_collection.delete_one({'_id': task_to_delete['_id']})
+            query = { 'user_id': user_id, 'task_id': { '$gt': task_to_delete['task_id'] } }
+            remaining_tasks = tasks_collection.find(query)
+            for task in remaining_tasks:
+                tasks_collection.update_one(
+                    { '_id': task['_id'] },
+                    { '$set': { 'task_id': task['task_id'] - 1 } }
+                )
             print("Task deleted successfully")
-
         else:
             print("Task not found")
 
-    def mark_task(self, user_id, task_id):
+    def mark_task(self, user_id: int, task_id: int):
         db = self.client[self.database]
         tasks_collection = db['tasks']
 
