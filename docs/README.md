@@ -20,10 +20,11 @@ The chatbot boasts the following features:
 To start using the Telegram Chatbot -- **Jarvis**, click [here](https://t.me/Rongzhi_chatbot) to chat with the bot.
 - You can initiate a chat session with `/start`.
 - After initiation, you can use the following commands to access various features:
-  - `/task_management`: Manage your tasks and to-do list.
+  - `/task`: Manage your tasks and to-do list.
   - `/llm`: Chat with Language Model (LLM).
   - `/style_transfer`: Apply artistic styles to your images.
   - `/news`: Get the latest news headlines from a chosen category.
+  - `/timer`: Set a timer to improve your productivity.
 - Feel free to check out more details of command usage in the [User Guide](https://li-rongzhi.github.io/TelegramChatbot/user_guide.html).
 
 If you want to deploy the chatbot on your own, please check out the [Deployment Instructions](https://li-rongzhi.github.io/TelegramChatbot/deployment_instructions.html).

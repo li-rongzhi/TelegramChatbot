@@ -22,10 +22,11 @@ async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         user_input = ' '.join(context.args)
-        pattern = r'([dts])/(.*?)\s*(?=[dts]/|\Z)'
+        pattern = r'([dtr])/(.*?)\s*(?=[dtr]/|\Z)'
         fields = re.findall(pattern, user_input)
         task_data = {'user_id': user_id, 'description':'', 'duetime': '', 'remark': ''}
         for prefix, value in fields:
+            print(prefix, value)
             if prefix == 'd':
                 task_data['description'] = value
             elif prefix == 't':
@@ -42,7 +43,7 @@ async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Deletes task from the task tracking list by index"""
     user_id = update.message.from_user.id
     if db.check_user_state(user_id, TASK_MANAGEMENT):
-        db.delete_task(user_id, context.args[0])
+        db.delete_task(user_id, int(context.args[0]))
         await update.message.reply_text("Task deleted successfully!")
     else:
         await update.message.reply_text("Please enter Task Management mode using /task.")
@@ -52,7 +53,7 @@ async def mark_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     if db.check_user_state(user_id, TASK_MANAGEMENT):
         task_id = context.args[0]
-        db.mark_task(user_id, task_id)
+        db.mark_task(user_id, int(task_id))
         await update.message.reply_text("Task marked successfully!")
     else:
         await update.message.reply_text("Please enter Task Management mode using /task.")
@@ -64,22 +65,16 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
         tasks = db.list_tasks(user_id)
         if tasks:
             headers = ["Task ID", "Description", "Is Done", "Remark", "Due"]
-            header_string = " | ".join(headers)
-            task_rows = [header_string]
+            task_rows = [headers]
             for task in tasks:
                 is_done = "Yes" if task['isDone'] else "No"
                 task_row = [task['task_id'], task['description'], is_done, task['remark'], task['due']]
                 task_rows.append(task_row)
 
             task_list = "\n".join([" | ".join(map(str, row)) for row in task_rows])
-
-            # for task in tasks:
-            #     task_str = " | ".join(str(column) for column in task)
-            #     task_rows.append(task_str)
-            task_list = "\n".join(task_rows)
             await update.message.reply_text(f"Your tasks:\n{task_list}")
         else:
-            await update.message.reply_text("You have no tasks.")
+            await update.message.reply_text("Enjoy your free time. You have no tasks currently.")
     else:
         await update.message.reply_text("Please enter Task Management mode using /task.")
 
