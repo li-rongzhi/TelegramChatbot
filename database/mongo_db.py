@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from utils.utils import GENERAL
 
 class MongoDB:
-    def __init__(self, host, port, database):
+    def __init__(self, host: str, port: int, database: str):
         self.host = host
         self.port = port
         self.database = database
@@ -55,7 +55,7 @@ class MongoDB:
             self.client.close()
             print("Disconnected from MongoDB")
 
-    def add_user(self, user_id):
+    def add_user(self, user_id: int):
         db = self.client[self.database]
         users_collection = db["users"]
 
@@ -69,6 +69,7 @@ class MongoDB:
             })
         else:
             print("User already in users collection")
+
     def check_user_state(self, user_id: str, target: int) -> bool:
         db = self.client[self.database]
         states_collection = db['states']
@@ -106,7 +107,7 @@ class MongoDB:
         if result.modified_count == 0 and not result.upserted_id:
             print("Error initializing user state")
 
-    def update_user_state(self, user_id, new_state) -> None:
+    def update_user_state(self, user_id: int, new_state: int) -> None:
         db = self.client[self.database]
         states_collection = db['states']
         result = states_collection.update_one(
@@ -117,7 +118,7 @@ class MongoDB:
         if result.modified_count == 0:
             print("Error updating user state")
 
-    def add_task(self, user_id, description, duetime, remark):
+    def add_task(self, user_id: int, description: str, duetime: str, remark: str):
         db = self.client[self.database]
         tasks_collection = db['tasks']
 
@@ -154,7 +155,7 @@ class MongoDB:
         except Exception as e:
             print(f"Error adding task: {e}")
 
-    def delete_task(self, user_id, task_id):
+    def delete_task(self, user_id: int, task_id: int):
         db = self.client[self.database]
         tasks_collection = db['tasks']
 
@@ -187,7 +188,7 @@ class MongoDB:
         else:
             print("Task marked as done")
 
-    def list_tasks(self, user_id):
+    def list_tasks(self, user_id: int):
         db = self.client[self.database]
         tasks_collection = db['tasks']
 
@@ -207,7 +208,7 @@ class MongoDB:
 
         return task_list
 
-    def start_new_dialog(self, user_id):
+    def start_new_dialog(self, user_id: int):
         dialog_id = str(uuid.uuid4())
         dialog_dict = {
             "_id": dialog_id,
@@ -224,7 +225,7 @@ class MongoDB:
             {"$set": {"current_dialog_id": dialog_id}}
         )
 
-    def get_dialog_messages(self, user_id, dialog_id: Optional[str] = None):
+    def get_dialog_messages(self, user_id: int, dialog_id: Optional[str] = None):
 
         if dialog_id is None:
             dialog_id = self.get_user_attribute(user_id, "current_dialog_id")
@@ -233,7 +234,7 @@ class MongoDB:
         dialog_dict = dialog_collection.find_one({"_id": dialog_id, "user_id": user_id})
         return dialog_dict["messages"]
 
-    def set_dialog_messages(self, user_id, dialog_messages: list, dialog_id: Optional[str] = None):
+    def set_dialog_messages(self, user_id: int, dialog_messages: list, dialog_id: Optional[str] = None):
 
         if dialog_id is None:
             dialog_id = self.get_user_attribute(user_id, "current_dialog_id")

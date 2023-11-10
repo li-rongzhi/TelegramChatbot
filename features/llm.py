@@ -19,13 +19,15 @@ async def llm(update: Update, context: ContextTypes.DEFAULT_TYPE):
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
 async def start_new_dialog(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Starts a new dialog"""
     user_id = update.message.from_user.id
     db.start_new_dialog(user_id)
     await update.message.reply_text(
         "You have started a new dialog session."
     )
 
-async def send_request(user_input, dialog_history):
+async def send_request(user_input: str, dialog_history: list):
+    """Sends a request to get response via Chatgpt API"""
     answer = None
     n_dialog_messages_before = len(dialog_history)
     while answer is None:
@@ -55,6 +57,7 @@ async def send_request(user_input, dialog_history):
     yield "finished", answer, (n_input_tokens, n_output_tokens), n_first_dialog_messages_removed
 
 async def send_message(update: Update, context: ContextTypes.DEFAULT_TYPE, user_input: str):
+    """Sends a message back to the user"""
     user_id = update.message.from_user.id
     if not db.check_tokens(user_id, 1000) and not db.get_user_attribute(user_id, "isPremium"):
         await update.message.reply_text("Sorry, you have reached the maximum usage. Please /upgrade for unlimited access.")
@@ -87,7 +90,8 @@ async def send_message(update: Update, context: ContextTypes.DEFAULT_TYPE, user_
         await update.message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
-def generate_prompt(user_input, dialog_history):
+def generate_prompt(user_input: str, dialog_history: list):
+    """Generates prompt with user input and dialog history"""
     messages = []
     for dialog_message in dialog_history:
         messages.append({"role": "user", "content": dialog_message["user"]})
@@ -95,7 +99,8 @@ def generate_prompt(user_input, dialog_history):
     messages.append({"role": "user", "content": user_input})
     return messages
 
-def count_tokens_from_messages(messages, answer, model="gpt-3.5-turbo"):
+def count_tokens_from_messages(messages: list, answer: str, model: str="gpt-3.5-turbo"):
+    """Counts number of tokens of dialog history"""
     encoding = tiktoken.encoding_for_model(model)
     tokens_per_message = 4
     n_input_tokens = 0
@@ -108,8 +113,9 @@ def count_tokens_from_messages(messages, answer, model="gpt-3.5-turbo"):
 
     return n_input_tokens, n_output_tokens
 
-def count_tokens_from_prompt(prompt, answer, model="gpt-3.5-turbo"):
-        encoding = tiktoken.encoding_for_model(model)
-        n_input_tokens = len(encoding.encode(prompt)) + 1
-        n_output_tokens = len(encoding.encode(answer))
-        return n_input_tokens, n_output_tokens
+def count_tokens_from_prompt(prompt: str, answer: str, model: str="gpt-3.5-turbo"):
+    """Counts number of tokens of a prompt"""
+    encoding = tiktoken.encoding_for_model(model)
+    n_input_tokens = len(encoding.encode(prompt)) + 1
+    n_output_tokens = len(encoding.encode(answer))
+    return n_input_tokens, n_output_tokens

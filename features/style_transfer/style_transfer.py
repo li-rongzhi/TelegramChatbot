@@ -86,11 +86,10 @@ class NeuralStyleTransfer:
         # Add more style mappings as needed
     }
 
-    def __init__(self, model_url):
-        print(model_url)
+    def __init__(self, model_url: str):
         self.model = hub.load(model_url)
 
-    def load_image(self, img_path):
+    def load_image(self, img_path: str):
         img = tf.io.read_file(img_path)
         img = tf.image.decode_image(img, channels=3)
         img = tf.image.convert_image_dtype(img, tf.float32)
@@ -98,14 +97,14 @@ class NeuralStyleTransfer:
         print("Image successfully loaded")
         return img
 
-    def save_image(self, img, filename):
+    def save_image(self, img: str, filename: str):
         cv2.imwrite(filename, cv2.cvtColor(np.squeeze(img) * 255, cv2.COLOR_BGR2RGB))
 
     def stylize_image(self, content_image, style_image):
         stylized_image = self.model(tf.constant(content_image), tf.constant(style_image))[0]
         return stylized_image
 
-    def pipeline(self, content_image_url, style_enum):
+    def pipeline(self, content_image_url: str, style_enum: str):
         try:
             content_image = self.load_image(content_image_url)
             if style_enum in self.style_images:
