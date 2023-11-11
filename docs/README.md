@@ -18,6 +18,9 @@ The chatbot boasts the following features:
 ## Usage
 
 To start using the Telegram Chatbot -- **Jarvis**, click [here](https://t.me/Rongzhi_chatbot) to chat with the bot.
+
+In case Jarvis is not currently deployed, no worries! You can still check out a short demo by watching [this video](https://www.youtube.com/watch?v=SNH7LUf8NR0).
+
 - You can initiate a chat session with `/start`.
 - After initiation, you can use the following commands to access various features:
   - `/task`: Manage your tasks and to-do list.
